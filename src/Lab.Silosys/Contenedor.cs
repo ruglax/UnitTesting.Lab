@@ -1,13 +1,24 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using Lab.Silosys.Services;
 
 namespace Lab.Silosys
 {
     public class Contenedor
     {
+        private readonly IExternalServiceExample _ws;
+
         private readonly int _alertCondition;
 
         private decimal _currentContent;
+
+        public Contenedor(IExternalServiceExample ws, decimal capacity)
+        {
+            _currentContent = 0;
+            _alertCondition = 90;
+            _ws = ws;
+            Capacity = capacity;
+        }
 
         public Contenedor(decimal capacity)
         {
@@ -15,13 +26,6 @@ namespace Lab.Silosys
             _alertCondition = 90;
             Capacity = capacity;
         }
-
-        //public Contenedor(decimal capacity, int alertCondition)
-        //{
-        //    _currentContent = 0;
-        //    _alertCondition = alertCondition;
-        //    Capacity = capacity;
-        //}
 
         /// <summary>
         /// Evento para notificar cuando el contenedor está cercano a llenarse.
@@ -63,7 +67,17 @@ namespace Lab.Silosys
             var percentage = CalculateUsedPercentage();
             if (percentage >= _alertCondition)
             {
-                OnFillEvent(EventArgs.Empty);
+                var alertResponse = _ws.CreateAlert(new AlertRequest
+                {
+                    AlertType = AlertType.Warning,
+                    AvailableCapacity = AvailableCapacity,
+                    Message = "El tanque está cernano a su límite de capacidad"
+                });
+
+                if (alertResponse.AlertStatus == AlertStatus.Created)
+                {
+                    OnWarningEvent(EventArgs.Empty);
+                }
             }
         }
 
@@ -88,7 +102,7 @@ namespace Lab.Silosys
             return CurrentContent * 100 / Capacity;
         }
 
-        private void OnFillEvent(EventArgs eventArgs)
+        private void OnWarningEvent(EventArgs eventArgs)
         {
             WarningEventHandler?.Invoke(this, eventArgs);
         }

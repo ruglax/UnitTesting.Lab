@@ -42,7 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contenedor.cs" />
+    <Compile Include="Services\AlertResponse.cs" />
+    <Compile Include="Services\AlertStatus.cs" />
+    <Compile Include="Services\AlertType.cs" />
+    <Compile Include="Services\ExternalServiceExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AlertRequest.cs" />
+    <Compile Include="Services\IExternalServiceExample.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

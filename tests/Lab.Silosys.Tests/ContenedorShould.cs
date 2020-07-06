@@ -1,15 +1,39 @@
 ﻿using System;
+using Lab.Silosys.Services;
 using Xunit;
+using Moq;
 
 namespace Lab.Silosys.Tests
 {
     public class ContenedorShould
     {
+        /// <summary>
+        /// Behavior Verification
+        /// </summary>
+        //[Fact]
+        //public void DecreaseCapacity()
+        //{
+        //    // Arrange
+        //    Mock<IExternalServiceExample> mockService = new Mock<IExternalServiceExample>();
+        //    mockService.Setup(x => x.CreateAlert(It.IsAny<AlertRequest>())).Returns(new AlertResponse
+        //    {
+        //        AlertStatus = AlertStatus.Error
+        //    });
+
+        //    Contenedor sut = new Contenedor(mockService.Object, 1000);
+
+        //    // Act
+        //    sut.Fill(1);
+
+        //    // Assert
+        //    mockService.Verify(m => m.CreateAlert(null), Times.Never);
+        //}
+
         [Fact]
         public void DecreaseCapacity()
         {
             // Arrange
-            Contenedor sut = new Contenedor(1000, );
+            Contenedor sut = new Contenedor(1000);
 
             // Act
             sut.Fill(1);
@@ -58,7 +82,7 @@ namespace Lab.Silosys.Tests
         //    Contenedor sut = new Contenedor(capacity);
 
         //    // Act
-        //    ArgumentOutOfRangeException ex = 
+        //    ArgumentOutOfRangeException ex =
         //        Assert.Throws<ArgumentOutOfRangeException>(() => sut.Fill(quantity));
 
         //    // Assert
