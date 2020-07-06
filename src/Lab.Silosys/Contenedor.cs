@@ -1,65 +1,96 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 
 namespace Lab.Silosys
 {
     public class Contenedor
     {
+        private readonly int _alertCondition;
+
         private decimal _currentContent;
 
-        public Contenedor()
+        public Contenedor(decimal capacity)
         {
             _currentContent = 0;
+            _alertCondition = 90;
+            Capacity = capacity;
         }
 
-        public delegate void FillEventHandler(object sender, EventArgs e);
+        //public Contenedor(decimal capacity, int alertCondition)
+        //{
+        //    _currentContent = 0;
+        //    _alertCondition = alertCondition;
+        //    Capacity = capacity;
+        //}
 
-        public event FillEventHandler FillEvent;
+        /// <summary>
+        /// Evento para notificar cuando el contenedor está cercano a llenarse.
+        /// </summary>
+        public event EventHandler<EventArgs> WarningEventHandler;
 
         /// <summary>
         /// Capacidad del contenedor.
         /// </summary>
-        public decimal Capacity { get; } = 1000;
+        public decimal Capacity { get; }
 
-        public decimal Used => _currentContent * 100 / Capacity;
+        /// <summary>
+        /// Contenido actual del contenedor.
+        /// </summary>
+        public decimal CurrentContent => _currentContent;
+
+        /// <summary>
+        /// Capacidad usada del conetedor.
+        /// </summary>
+        public decimal AvailableCapacity => Capacity - CurrentContent;
+
 
         /// <summary>
         /// Realiza el llenado del contenedor.
+        /// Cuando se agrega alguna cantidad, se debe modificar la caapacidad disponible
         /// </summary>
-        /// <param name="contenido"></param>
-        public void Fill(decimal contenido)
+        /// <param name="quantity"></param>
+        public void Fill(decimal quantity)
         {
-            throw new NotImplementedException();
+            if (quantity < 0)
+                throw new ArgumentOutOfRangeException(nameof(quantity), $"{nameof(quantity)} debe tener un valor mayor o igual a cero.");
+
+            var temp = _currentContent + quantity;
+            if (temp > AvailableCapacity)
+                throw new ArgumentOutOfRangeException(nameof(quantity), $"{nameof(quantity)} no debe exceder la capacidad disponible.");
+
+            _currentContent = temp;
+
+            var percentage = CalculateUsedPercentage();
+            if (percentage >= _alertCondition)
+            {
+                OnFillEvent(EventArgs.Empty);
+            }
         }
 
         /// <summary>
         /// Realiza el vaciado del contenedor.
         /// </summary>
-        public void Clear()
+        public void Extact(decimal quantity)
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Realiza el vaciado del contenedor.
-        /// <param name="quantity">Cantidad de materia a vaciar del contenedor.</param>
-        /// </summary>
-        public void Clear(decimal quantity)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Realiza una llamada a un device x para obtener información del contenido.
+        /// Realiza una llamada a un device x para obtener información del quantity.
         /// </summary>
         public void Process()
         {
             throw new NotImplementedException();
         }
 
-        protected virtual void OnFillEvent()
+        public decimal CalculateUsedPercentage()
         {
-            throw new NotImplementedException();
-            //FillEvent?.Invoke(this, EventArgs.Empty);
+            return CurrentContent * 100 / Capacity;
+        }
+
+        private void OnFillEvent(EventArgs eventArgs)
+        {
+            WarningEventHandler?.Invoke(this, eventArgs);
         }
     }
 }
